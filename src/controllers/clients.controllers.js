@@ -20,3 +20,35 @@ export async function postNewClient (req, res) {
         res.status(500).send(error.message)
     }
 }
+
+export async function getClientsOrders (req, res){
+    const id = req.params.id
+
+    try {
+        const isClient = await db.query('SELECT * FROM clients WHERE id = $1', [id])
+        if (!isClient) return res.sendStatus(404)
+
+        const query = `
+        SELECT
+            orders.id AS "orderId",
+            orders.quantity,
+            orders.createdAt,
+            orders.totalPrice,
+            cakes.name AS "cakeName"
+        FROM
+            orders
+            JOIN cakes ON orders.cakeId = cakes.id
+        WHERE
+            orders.clientId = $1
+        ORDER BY
+            orders.createdAt DESC
+        `
+
+        const result = await db.query(query, [id])
+        const orders = result.rows
+
+        return res.status(200).send(orders)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
