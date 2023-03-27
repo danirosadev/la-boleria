@@ -19,7 +19,7 @@ export async function postNewCake (req, res) {
         const isFlavour = await db.query('SELECT * FROM flavours WHERE id = $1', [flavourId])
         if (isFlavour.rowCount === 0) return res.sendStatus(404)
         
-        await db.query('INSERT INTO cakes (name, price, description, image, flavour_id) VALUES ($1, $2, $3, $4) RETURNING *', [name, price, description, image, flavourId])
+        await db.query('INSERT INTO cakes (name, price, description, image, flavour_id) VALUES ($1, $2, $3, $4, $5) RETURNING *', [name, price, description, image, flavourId])
         res.sendStatus(201)
     } catch (error) {
         res.status(500).send(error.message)

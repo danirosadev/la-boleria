@@ -1,10 +1,10 @@
-export default function validateOrder (schema) {
-    return (req, res, next) => {
-        const validation = schema.validate(req.body, { abortEarly: false })
-        if (validation.error) {
-            const errorMessages = validation.error.details.map(err => err.message)
-            return res.status(400).send(errorMessages)
-        }
-        next()
-    }
-}
+// export default function validateOrder (schema) {
+//     return (req, res, next) => {
+//         const { error } = schema.validate(req.body, {abortEarly: false})
+//         if (error) {
+//             const errorMsg = error.details.map(err => err.message)
+//             return res.status(400).send(errorMsg)
+//         }
+//         next()
+//     }
+// }

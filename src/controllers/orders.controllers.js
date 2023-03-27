@@ -21,7 +21,7 @@ export async function postNewOrder(req, res) {
 export async function getOrders (req, res){
     try {
         const schema = Joi.object({
-            date: Joi.date().format('YYY-MM-DD')
+            date: Joi.date()
         })
     
         const { error } = schema.validate(req.query)
@@ -37,13 +37,13 @@ export async function getOrders (req, res){
             cakes.name as cakes_name,
             cakes.price as cakes_price,
             cakes.description as cake_description,
-            orders.createdAt,
+            orders.created_at,
             orders.quantity,
-            orders.totalPrice
+            orders.total_price
         FROM
             orders
-            JOIN clients ON orders.clientId = client.id
-            JOIN cake ON orders.cakeId - cakes.id
+            JOIN clients ON orders.client_id = clients.id
+            JOIN cakes ON orders.cake_id = cakes.id
         `
     
         if (req.query.date) {
