@@ -1,17 +1,18 @@
 import Joi from "joi";
 import db from "../config/database.connection.js";
+import { findCakeByIdRepository, findClientByIdRepository, getOrderByIdRepository, postOrderRepository } from "../repositories/ordersRepositories.js";
 
 export async function postNewOrder(req, res) {
     const { clientId, cakeId, quantity, totalPrice } = req.body
 
     try {
-       const isClient = await db.query('SELECT * FROM clients WHERE id = $1', [clientId])
+       const isClient = await findClientByIdRepository(clientId)
        if (isClient.rows.length === 0) return res.status(404).send("Client not found")
        
-       const isCake = await db.query('SELECT * FROM cakes WHERE id = $1', [cakeId])
+       const isCake = await findCakeByIdRepository(cakeId)
        if (isCake.rows.length === 0) return res.status(404).send("Cake not found")
 
-       const newOrder = await db.query('INSERT INTO orders (client_id, cake_id, quantity, total_price, created_at) VALUES ($1, $2, $3, $4, $5)', [clientId, cakeId, quantity, totalPrice, new Date()])
+       await postOrderRepository(clientId, cakeId, quantity, totalPrice)
        res.sendStatus(201) 
     } catch (error) {
         res.status(500).send(error.message)
@@ -81,7 +82,7 @@ export async function getOrders (req, res){
 export async function getOrderById (req, res) {
     try {
         const orderId = req.params.id
-        const result = await db.query('SELECT c.*, o.*, cl.* FROM cakes c, orders o, clients cl WHERE o.cake_id = c.id AND o.client_id = cl.id AND o.id = $1', [orderId])
+        const result = await getOrderByIdRepository(orderId)
         if (result.rows.length === 0) return res.sendStatus(404)
 
         const { id, name, address, phone } = result.rows[0]
